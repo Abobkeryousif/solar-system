@@ -6,7 +6,6 @@ on:
         branches:
             - main
             - 'feature/*'   # will work in any yaml file inside feature folder
-
 env:
   MONGO_URI: 'mongodb+srv://superuser:superpassword@cluster0.qfg2mgr.mongodb.net/TestDB'            
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
