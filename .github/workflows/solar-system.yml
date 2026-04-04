@@ -1,0 +1,29 @@
+name: solar system workflow
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+            - 'feature/*'   # will work in any yaml file inside feature folder
+
+jobs:
+    unit-testing:
+        name: unit-test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: checkout repo code
+              uses: actions/checkout@v4
+
+            - name: setup node verison 18
+              uses: actions/setup-node@v5
+              with:
+                node-version: 18
+
+            - name: install-dependency 
+              run: npm install
+
+            - name: unit testing
+              run: npm test
+
