@@ -8,7 +8,7 @@ on:
             - 'feature/*'   # will work in any yaml file inside feature folder
 
 env:
-  MONGO_URL: 'mongodb+srv://superuser:superpassword@cluster0.qfg2mgr.mongodb.net/TestDB'            
+  MONGO_URI: 'mongodb+srv://superuser:superpassword@cluster0.qfg2mgr.mongodb.net/TestDB'            
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 jobs:
