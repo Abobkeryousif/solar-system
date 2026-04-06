@@ -51,7 +51,7 @@ jobs:
           id: nodejs-codecoverage
 
         - name: code coverage test
-          if: failure() && (steps.nodejs-codecoverage.outcome == 'failure' || steps.nodejs-codecoverage.outcome == 'success')
+          if: always()
           continue-on-error: true
           run: npm run coverage
 
