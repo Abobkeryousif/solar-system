@@ -24,6 +24,12 @@ jobs:
               uses: actions/setup-node@v5
               with:
                 node-version: 18
+            
+            - name: cache dependency
+              uses: actions/cache@v3
+              with:
+                path: node_modules
+                key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
             - name: install-dependency 
               run: npm install
@@ -46,13 +52,17 @@ jobs:
           with:
             node-version: 18
 
+        - name: cache dependencies
+          uses: actions/cache@v3
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock-json') }}
+        
         - name: install dependency 
           run: npm install
-          id: nodejs-codecoverage
+        
 
         - name: code coverage test
-          if: always()
-          continue-on-error: true
           run: npm run coverage
 
         - name: archive test result
