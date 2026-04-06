@@ -7,9 +7,10 @@ on:
             - main
             - 'feature/*'   
 env:
-  MONGO_URI: 'mongodb+srv://superuser:superpassword@cluster0.ppefvpi.mongodb.net/superData'            
-  MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+  MONGO_URI: 'mongodb+srv://superuser:${{ secrets.MONGO_PASSWORD }}@cluster0.ppefvpi.mongodb.net/superData'            
+  MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+  
 jobs:
     unit-testing:
         name: unit-test
@@ -27,6 +28,10 @@ jobs:
             - name: install-dependency 
               run: npm install
 
+            - name: unit testing
+              run: npm test 
+              id: nodejs-unit-test
+              continue-on-error: true
 
     code-coverage:
       needs: unit-testing
@@ -43,8 +48,10 @@ jobs:
 
         - name: install dependency 
           run: npm install
+          id: nodejs-codecoverage
 
         - name: code coverage test
+          if: failure() && (steps.nodejs-codecoverage.outcome == 'failure' || steps.nodejs-codecoverage.outcome == 'success')
           continue-on-error: true
           run: npm run coverage
 
