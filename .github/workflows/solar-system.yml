@@ -81,8 +81,22 @@ jobs:
         - name: checkout code to runner
           uses: actions/checkout@v3
 
-        - name: docker hub login
-          uses: docker/login-action@v3
+        - name: ghcr login
+          uses: docker/login-action@v4
           with:
-            username: ${{ vars.DOCKER_USERNAME }}
-            password: ${{ secrets.DOCKER_PASSWORD }}
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        
+        - name: docker build for test
+          uses: docker/build-push-action@v7
+          with:
+            context: . # path of docker file , in this case file one root , so we just ad .
+            push: true
+            tags: ghcr.io/${{ github.repository_owner }}/solar-system:${{ github.sha }}  # version of tag here depend on sha id , it will verisoned it by the sha id value
+
+            
+            
+
+          
