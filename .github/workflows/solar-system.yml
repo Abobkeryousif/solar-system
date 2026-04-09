@@ -102,7 +102,20 @@ jobs:
             push: true
             tags: ghcr.io/${{ env.REPO }}/solar-system:${{ github.sha }}  # version of tag here depend on sha id , it will verisoned it by the sha id value
 
-            
-            
+    dev-deploy:
+      needs: containerization 
+      runs-on: ubuntu-latest
+      steps:
+        - name: pull code to runner
+          uses: actions/checkout@v3
+          
+        - name: install kubectl cli
+          uses: azure/setup-kubectl@v5
+
+        - name: k8s cluster details
+          run: |
+            kubectl version --short -o yaml
+            echo -------------------
+            kubectl get nodes
 
           
