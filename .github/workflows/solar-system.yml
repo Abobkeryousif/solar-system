@@ -109,6 +109,12 @@ jobs:
         - name: pull code to runner
           uses: actions/checkout@v3
           
+        - name: set kubeconfig
+          uses: azure/k8s-set-context@v5
+          with:
+            method: kubeconfig
+            kubeconfig: ${{ secrets.KUBECONFIG }}
+        
         - name: install kubectl cli
           uses: azure/setup-kubectl@v5
 
