@@ -25,20 +25,12 @@ jobs:
               with:
                 node-version: 18
             
-            - name: cache dependency
-              uses: actions/cache@v3
+            - name: composite action - cache & install npm
+              uses: ./.github/custom-actions/npm-action  #uses our composit custom actions
               with:
-                path: node_modules
-                key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+                path-of-folder: node_moduless  
 
-            - name: install-dependency 
-              run: npm install
-
-            - name: unit testing
-              run: npm test 
-              id: nodejs-unit-test
-              continue-on-error: true
-
+              
     code-coverage:
     
       needs: unit-testing
@@ -53,14 +45,10 @@ jobs:
           with:
             node-version: 18
 
-        - name: cache dependencies
-          uses: actions/cache@v3
+        - name: composite action - cache & install npm
+          uses: ./.github/custom-actions/npm-action   #uses our composit custom actions
           with:
-            path: node_modules
-            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock-json') }}
-        
-        - name: install dependency 
-          run: npm install
+            path-of-folder: node_moduless  
         
 
         - name: code coverage test
