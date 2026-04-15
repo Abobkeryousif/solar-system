@@ -1,0 +1,112 @@
+name: solar system workflow
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - main
+            - 'feature/*'   
+# env:
+#   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+#   MONGO_URI: 'mongodb+srv://superuser:${{ secrets.MONGO_PASSWORD }}@cluster0.ppefvpi.mongodb.net/superData'            
+#   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
+  
+jobs:
+    unit-testing:
+        name: unit-test
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: checkout repo code
+              uses: actions/checkout@v4
+
+            - name: setup node verison 18
+              uses: actions/setup-node@v5
+              with:
+                node-version: 18
+            
+            - name: composite action - cache & install npm
+              uses: ./.github/custom-actions/npm-action  #uses our composit custom actions
+              with:
+                path-of-folder: node_moduless  
+
+              
+    code-coverage:
+    
+      needs: unit-testing
+      runs-on: ubuntu-latest
+      
+      steps:
+        - name: checkout repo code
+          uses: actions/checkout@v4
+          
+        - name: setup node version 18
+          uses: actions/setup-node@v5
+          with:
+            node-version: 18
+
+        - name: composite action - cache & install npm
+          uses: ./.github/custom-actions/npm-action   #uses our composit custom actions
+          with:
+            path-of-folder: node_moduless  
+        
+
+        - name: code coverage test
+          run: npm run coverage
+          continue-on-error: true
+
+        - name: archive test result
+          uses: actions/upload-artifact@v5
+          with:
+            name: code coverage result 
+            path: coverage
+            retention-days: 5  # insted of delete file manully , with this feature file will deleted after 5 days automaticlly 
+          
+    containerization:
+      runs-on: ubuntu-latest
+      needs: [unit-testing,code-coverage]
+      steps:
+        - name: checkout code to runner
+          uses: actions/checkout@v3
+
+        - name: set repo name to lowercase
+          run: |
+            REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            echo "REPO=$REPO" >> $GITHUB_ENV
+
+
+        - name: ghcr login
+          uses: docker/login-action@v4
+          with:
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.CR_PAT }}
+
+        
+        - name: docker build for test
+          uses: docker/build-push-action@v5
+          with:
+            context: . # path of docker file , in this case file one root , so we just ad .
+            push: true
+            tags: ghcr.io/${{ env.REPO }}/solar-system:${{ github.sha }}  # version of tag here depend on sha id , it will verisoned it by the sha id value
+
+    # dev-deploy:
+    #   needs: containerization 
+    #   runs-on: self-hosted
+    #   env:
+    #     KUBECONFIG: /home/Mohamed Hasouna/.kube/config
+    #   steps:
+    #     - name: pull code to runner
+    #       uses: actions/checkout@v3
+  
+      
+    #     - name: install kubectl cli
+    #       uses: azure/setup-kubectl@v5
+
+    #     - name: k8s cluster details
+    #       run: |
+    #         kubectl version --short -o yaml
+    #         echo -------------------
+    #         kubectl get nodes
+
+          
