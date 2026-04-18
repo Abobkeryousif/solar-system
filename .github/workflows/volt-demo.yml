@@ -1,0 +1,19 @@
+name: HashiCrop Valut
+on: workflow_dispatch
+
+jobs: 
+    echo-valut-secrets:
+        runs-on: ubuntu-latest
+        steps:
+            - name: testing secret
+              run: |
+                if [[ -z $"{{ secrets.DOCKER_USERNAME }}"  ]]; then
+                    echo "secret not found"
+                    exit 1
+
+                else
+                    echo "secret founded"
+                    exit 0
+
+                fi
+    
